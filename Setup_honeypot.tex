@@ -71,7 +71,7 @@ We have decided to split up our monitoring time into two parts.
 In the first part we configure the virtual machine as a system of security `traps', also called a low-interaction (LI) honeypot, and monitor activity for one month.
 Then we will reconfigure the machine to a high-interaction (HI) honeypot, exposing real, exploitable vulnerabilities that can lead to code execution on our machine and monitor much more intently for another month. 
 
-After these period we will analyze the results of both setups and compare the differences in the results we have captured. 
+After these periods we will analyze the results of both setups and compare the differences in the results we have captured. 
 The advantage of a LI honeypot is that the machine can only be compromised to a certain extent and can not really be used for any malicious activity.
 The disadvantage is that it is not possible to capture all the activity an attacker might perform, like after escalating privileges - which should not be possible.
 The advantage of a HI honeypot is that you can capture all the activity, but that the system might also be completely compromised and do damage to other systems.
