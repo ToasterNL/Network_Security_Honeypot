@@ -166,6 +166,23 @@ If a rule is triggered, snort will log an alert.
 We will configure Snort to send alerts to syslog, and to log its packet captures to some form of read-only filesystem mounted from our monitoring machine (yet to be decided).
 We will install a script like \verb|auto-oink| to automatically retrieve the latest community Snort rules.
 
+\subsection{Kernel Module}
+
+For HI phase, we would like to have a way to audit the commandline. 
+To make it harder to detect this we would like to do this in the kernel.
+We could edit auditd for the user, but this wil be too noticiable. 
+A tool we can use is Sebek, but this is outdated and not maintained.
+So we have started work on our own kernel module, which will hopefully be ready before we start the HI phase.
+
+
+
+
+
+
+
+
+
+
 \bibliographystyle{alpha}
 \bibliography{ref_bib}
 
