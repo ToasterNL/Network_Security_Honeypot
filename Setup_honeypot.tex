@@ -87,11 +87,11 @@ Relying on UDP is not very desirable, because everything is sent in plaintext an
 To allow for safe and reliable transmission of the syslog messages from the honeypot to the monitoring machine, one needs to use TCP connections in syslog, and provide some way of encapsulating the socket used in a cryptographic layer.
 
 %A VPN session between the two hosts is possible, but might be considered as overkill and still does not garantee delivery.
-We have decided to set up a reverse SSH tunnel from the monitoring machine to the honeypot machine, as described in the article ``Remote logging with syslog-ng''. \cite{Remote_logging}
-The command establishes an SSH connection the honeypot, setting options to forego a login shell or anything a normal user would desire, and binds the local socket 9514 on the honeypot machine to tunnel its connections to the same port on our monitoring machine.
-We have put this command there in a script to allow the connection to be re-esthablished quickly and easily if the SSH session is terminated for some reason. 
+We have decided to set up a reverse SSH tunnel from the monitoring machine to the honeypot machine, as described in the article ``Remote logging with SSH and syslog-ng''. \cite{remote_logging}
+The example command establishes an SSH connection the honeypot, setting options to forego a login shell or anything a normal user would desire, and binds the local socket 9514 on the honeypot machine to tunnel its connections to the same port on our monitoring machine.
+We have put this command in a script to allow the connection to be re-esthablished quickly and easily if the SSH session is terminated for some reason. 
 
-We have configured a locally installed the \verb|syslog-ng| package for our \verb|util| account user, configured it to listen to local TCP connections on port 9514 and thereby receive syslog messages transmitted through this port.
+We have configured a locally installed the \verb|syslog-ng| package for our user on the monitoring machine, and configured it to listen to local TCP connections on port 9514 and thereby receive syslog messages transmitted through this port.
 
 To allow for secure SSH access, a public keypair was generated on the util machine and the associated public key was added to the honeypot's \verb|authorized_keys| file.
 
@@ -112,15 +112,15 @@ Note that the chosen port is very similar to the default syslog port 514, and th
 We plan to change it to a more nondescript port number.
 
 \subsection{scanlogd}
-To detect port scans we have installed the service scanlogd.
+To detect port scans we have installed the service \verb|scanlogd|.
 Per detected scan an entry is written to syslog.
 
 \subsection{iptables}
 To log all incoming and outgoing connection attempts, we have added the following rules to the iptables configuration. 
 This will also log to syslog.
 
-\emph{iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
-\emph{iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
+\verb|iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "|
+\verb|iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "|
 
 \subsection{Kippo}
 To capture attackers that try to come in by brute-forcing SSH logins, we are using Kippo. 
