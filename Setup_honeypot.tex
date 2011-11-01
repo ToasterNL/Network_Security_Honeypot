@@ -66,79 +66,105 @@
 
 \section{Introduction}
 
-In this document we explain how we have setup the utility machine and the honeypot. 
-We have decided to split up our monitoring time into two parts. In the first part we configure the honeypot as a trapped based system and monitor it for 1 month.
-Then we will reconfigure the honeypot to a completely open system and monitor that for 1 month. 
-After that period we will analyze the results of both setups and compare the differences in the results we have captured. 
-The advantage of a trap based system is that the honeypot can only be compromised to a certain extent and can not really be used for any malicious activity.
-The disadvantage is that it is not possible to capture all the malicious activity an attacker can perform.
-The advantage of a completely open system is that you can capture all the malicious activity, but that the system might also be completely compromised and do damage to other systems.
+In this document we explain how we have set up the our honeypot. 
+We have decided to split up our monitoring time into two parts.
+In the first part we configure the virtual machine as a system of security `traps', also called a low-interaction (LI) honeypot, and monitor activity for one month.
+Then we will reconfigure the machine to a high-interaction (HI) honeypot, exposing real, exploitable vulnerabilities that can lead to code execution on our machine and monitor much more intently for another month. 
 
+After these period we will analyze the results of both setups and compare the differences in the results we have captured. 
+The advantage of a LI honeypot is that the machine can only be compromised to a certain extent and can not really be used for any malicious activity.
+The disadvantage is that it is not possible to capture all the activity an attacker might perform, like after escalating privileges - which should not be possible.
+The advantage of a HI honeypot is that you can capture all the activity, but that the system might also be completely compromised and do damage to other systems.
+That is why we need to be much more vigilant in monitoring our honeypot in the HI phase.
 
-\section{Setup: Utility Machine}
+\section{Setup: Monitoring Machine}
 
-In this section we decribe the setup of the utility machine.
+In this section we describe the setup of the monitoring machine.
 
 \subsection{Syslog}
-Syslog uses UDP to transmit its logfiles to a remote server and this is not very desirable, because everything is sent in plaintext and delivery is not garanteed.
-A VPN session between the two hosts is possible, but might be considered as overkill and still does not garantee delivery.
-Therefore we have configured syslog to use TCP, which makes it possible to use SSH to tunnel the TCP traffic.
-We are using a reverse tunnel from the utility machine to the honeypot.
-We use a script to allow the connection to be re-esthablished quickly when the SSH session is terminated for some reason. 
-\cite{Remote_logging}
+By default, \verb|syslog| uses UDP to transmit its log messages to a remote server.
+Relying on UDP is not very desirable, because everything is sent in plaintext and delivery of UDP messages is not guaranteed.
+To allow for safe and reliable transmission of the syslog messages from the honeypot to the monitoring machine, one needs to use TCP connections in syslog, and provide some way of encapsulating the socket used in a cryptographic layer.
 
-\subsection{Root}
+%A VPN session between the two hosts is possible, but might be considered as overkill and still does not garantee delivery.
+We have decided to set up a reverse SSH tunnel from the monitoring machine to the honeypot machine, as described in the article ``Remote logging with syslog-ng''. \cite{Remote_logging}
+The command establishes an SSH connection the honeypot, setting options to forego a login shell or anything a normal user would desire, and binds the local socket 9514 on the honeypot machine to tunnel its connections to the same port on our monitoring machine.
+We have put this command there in a script to allow the connection to be re-esthablished quickly and easily if the SSH session is terminated for some reason. 
+
+We have configured a locally installed the \verb|syslog-ng| package for our \verb|util| account user, configured it to listen to local TCP connections on port 9514 and thereby receive syslog messages transmitted through this port.
+
+To allow for secure SSH access, a public keypair was generated on the util machine and the associated public key was added to the honeypot's \verb|authorized_keys| file.
+
+ %which makes it possible to use SSH to tunnel the TCP traffic.
+
+%\subsection{Root}
+% haha surely you jest :>
 
 \section{Setup: Honeypot}
 
 In this section we decribe the setup of the honeypot.
 
-\subsection{scanlogd}
+\subsection{Rsyslog}
+On the honeypot, we've modified the \verb|rsyslog| configuration to also send syslog messages to the (now bound) local port 9514, completing the chain.
+The modified configuration is now stored in its own file in the syslog.d directory, which is a bit obvious to anyone taking interest.
+The configuration should and will be moved over to one of the default configuration files to avoid raising suspicion.
+Note that the chosen port is very similar to the default syslog port 514, and this might give us away.
+We plan to change it to a more nondescript port number.
 
-To detect portscans we have installed the tool scanlogd.
-Per scan an entry is written to syslog.
+\subsection{scanlogd}
+To detect port scans we have installed the service scanlogd.
+Per detected scan an entry is written to syslog.
 
 \subsection{iptables}
-To log all connection attempts coming in and going out, we have added the following rules to the iptables configuration. 
+To log all incoming and outgoing connection attempts, we have added the following rules to the iptables configuration. 
 This will also log to syslog.
 
 \emph{iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
-
 \emph{iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
 
-
 \subsection{Kippo}
-To capture attackers that try to come in over ssh, we are using Kippo. 
+To capture attackers that try to come in by brute-forcing SSH logins, we are using Kippo. 
 Kippo is used to log bruteforce attacks and the shell interaction performed by the attacker. 
-To make this as realistic as possible we have added a redicrect in the iptables configuration from port 22 to port 2222 that kippo uses. 
-Unfortunately this broke down after a while, for reasons yet unknown. 
+To make this as realistic as possible we have added a redirect in the iptables configuration from port 22 to port 2222 that kippo uses. 
+Unfortunately this broke down around the time the firewall was being reconfigured, for unclear reasons. 
 The reason for forwarding was not to give Kippo root capabilities.
 
-To be able to still log on to the honeypot, we configured port 9022 to be used by ssh.
+To be able to still log on to the honeypot, we configured SSH to use port 9022.
 
 \subsection{DenyHosts}
-If someone finds out our real SSH port changed to 9022, they might try to break into this port. To make sure no bruteforce attacks can be done on this port, DenyHosts is installed. This program blocks IP-adresses that try to log in more than 3 times, with the wrong password. The blocked hosts are blacklisted on the honeypot, so we can edit them if needed.
+If someone finds out our real SSH port changed to 9022, they might try to break in via our real SSH service.
+To make sure no bruteforce attacks can be done on this port, DenyHosts is installed.
+This service blocks IP-adresses that try to log in more than 3 times with the wrong password by adding them to the \verb|hosts.deny| file.
+The hosts listed there are blacklisted on the machine, but we can edit them if needed.
 
 \subsection{Google Hack Honeypot}
-Google Hack Honeypot (GHH) is used to attract search engine attackers. 
-These attackers will use search queries to find sensitive data, for example password files, that due to some misconfiguration ended up being indexed by a search engine like google.
-To set this up we have first installed Apache and PHP5.
-Then we configured GHH to use Comma Seperated Values, since MySQL was not installed yet on the util machine and to see if this would actually work. 
-We can later reconfigure to use MySQL, if the results are not satisfactory.
-Since GHH offers multiple setup honeypot we picked one to start with, namely GGH version 1.2 passlist.txt.
-We had no particular reason for this, only that it was easy to set up. 
-The plan was to install more variants of the GHH to attract more attackers, but before this could happen the VM's were shut down.
+Google Hack Honeypot (GHH) is designed to be used to attract search engine attackers. 
+These attackers will use search queries to find sensitive data, for example password files, that due to some misconfiguration ended up being indexed by a search engine like Google.
+GHH allows logging of these requests to a MySQL database or Comma Seperated Value (CSV) file.
 
+
+Since GHH offers multiple search targets, we picked one to start with, namely GGH version 1.2 passlist.txt.
+We had no particular reason for this, only that it was easy to set up. 
+We plan to install more variants of the GHH to attract more attackers, but before this could happen the VM's were shut down.
+
+To set up GHH we have first installed Apache and PHP5.
+We configured GHH to log to in CSV format, since it requires minimal setup and is easily parsed.
+%We can later reconfigure to use MySQL, if the results are not satisfactory.
+Then, we patched the GHH code to allow logging to syslog, to maintain a single, consistent point of log collection.
 
 \subsection{Snort}
-Snort is a network intrusion detection system (NIDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
-Snort can be used as a network intrusion prevention system, however we will only be using it to detect attacks.
-Snort is rule-based and we intend to setup Snort using a predefined rules-set that will only alert on suspicious network behaviour and do nothing to prevent it. 
-The rules that we will be using are based on a honeypot rule-set. Included are rules on detecting backdoors, viruses, DDOS, spam, SMTP- and other exploits. There rules will be tweaked if the results are poor.
-If a rule is triggered, we can look at the logs from the packet logger to analyse the network traffic.
-Snort sends alerts and packet logging files to syslog and as stated earlier, the syslog log files are transfered to the remote util machine.
+Snort is an intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
+Snort was designed to be used as a network IDS, however we will be running it on our host machine, effectively making it a host-based IDS.
 
+Unfortunately the VM network went down before we were able to complete our Snort configuration.
+We intend to set up Snort using a predefined rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
+The rules that we will be using are based on a honeypot rule-set. % TODO reference
+Included are rules on detecting backdoors, viruses, DDOS, spam and other abuse.
+These rules will be tweaked if the results are unsatisfactory.
+If a rule is triggered, snort will log an alert.
 
+We will configure Snort to send alerts to syslog, and to log its packet captures to some form of read-only filesystem mounted from our monitoring machine (yet to be decided).
+We will install a script like \verb|auto-oink| to automatically retrieve the latest community Snort rules.
 
 \bibliographystyle{alpha}
 \bibliography{ref_bib}
