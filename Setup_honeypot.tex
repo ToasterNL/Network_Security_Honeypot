@@ -134,25 +134,29 @@ Per detected scan an entry is written to syslog.
 To log all incoming and outgoing connection attempts, we have added the following rules to the iptables configuration. 
 This will also log to syslog.
 
-\verb|iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "|
-\verb|iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "|
+\begin{verbatim}
+iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
+iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
+\end{verbatim}
 
 \subsection{Kippo}
 To capture attackers that try to come in by brute-forcing SSH logins, we are using Kippo. 
-Kippo is used to log bruteforce attacks and the shell interaction performed by the attacker. 
+Kippo is a sandbox SSH service, used to log bruteforce attacks and the shell interaction performed by the attacker after gaining access (with a trivial password). 
 We've installed the latest development version to run as a separate user.
-To make this as realistic as possible we have added a redirect in the iptables configuration from port 22 to port 2222 that kippo uses by default.
-Unfortunately this broke down around the time the firewall was being reconfigured, for unclear reasons. 
-The reason for forwarding was not to give Kippo root capabilities.
 
-To be able to still log on to the honeypot, we configured our real SSH service to use port 9022.
+To make this as realistic as possible we have added a redirect in the iptables configuration from the real SSH port 22 to port 2222 that Kippo uses by default.
+The reason for forwarding in iptables was to not give Kippo root rights, which would be very dangerous. % better word: insane
+Unfortunately the forward broke down around the time the firewall was being reconfigured, for reasons yet unclear . 
+If it can't be resolved, we can circumvent this issue by running Kippo through a copy of the Python interpreter that has the capability to bind privileged ports.
+
+To be able to still log on to the honeypot, we have configured our real SSH service to run on port 9022.
 
 We have patched Kippo to log messages to syslog.
 
 \subsection{DenyHosts}
-If someone finds out our real SSH port changed to 9022, they might try to break in via our real SSH service.
+If someone finds out our real SSH port changed to 9022, they might try to break in through our real SSH service.
 To make sure no bruteforce attacks can be done on this port, DenyHosts is installed.
-This service blocks IP-adresses that try to log in more than 3 times with the wrong password by adding them to the \verb|hosts.deny| file.
+This service blocks IP-addresses that try to log in more than 3 times with the wrong password by adding them to the \verb|hosts.deny| file.
 The hosts listed there are blacklisted on the machine, but we can edit them if needed.
 
 This does not log to syslog. We hope to fix that, but it's not a priority until the HI phase.
