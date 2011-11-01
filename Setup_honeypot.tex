@@ -116,6 +116,9 @@ The reason for forwarding was not to give Kippo root capabilities.
 
 To be able to still log on to the honeypot, we configured port 9022 to be used by ssh.
 
+\subsection{DenyHosts}
+If someone finds out our real SSH port changed to 9022, they might try to break into this port. To make sure no bruteforce attacks can be done on this port, DenyHosts is installed. This program blocks IP-adresses that try to log in more than 3 times, with the wrong password. The blocked hosts are blacklisted on the honeypot, so we can edit them if needed.
+
 \subsection{Google Hack Honeypot}
 Google Hack Honeypot (GHH) is used to attract search engine attackers. 
 These attackers will use search queries to find sensitive data, for example password files, that due to some misconfiguration ended up being indexed by a search engine like google.
