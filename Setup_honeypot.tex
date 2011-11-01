@@ -128,9 +128,11 @@ The plan was to install more variants of the GHH to attract more attackers, but 
 
 
 \subsection{Snort}
-
-Stukje Joost en Bart.
-
+Snort is a network intrusion detection system (NIDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
+we use it to detect several attacks including stealth port scans, buffer overflows and more. Snort can be used as a network intrusion prevention system, however we will only be using it to detect attacks.
+Snort is rule-based, but we only intend to setup a few general rules that will only alert to suspicious network behaviour and do nothing to prevent it. 
+If a rule is triggered, we can look at the logs from the packet logger to analyse the network traffic.
+Snort sends alerts and packet logging files to syslog and as stated earlier, the syslog log files are transfered to the remote util machine.
 
 
 
