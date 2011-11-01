@@ -158,8 +158,7 @@ If someone finds out our real SSH port changed to 9022, they might try to break 
 To make sure no bruteforce attacks can be done on this port, DenyHosts is installed.
 This service blocks IP-addresses that try to log in more than 3 times with the wrong password by adding them to the \verb|hosts.deny| file.
 The hosts listed there are blacklisted on the machine, but we can edit them if needed.
-
-This does not log to syslog. We hope to fix that, but it's not a priority until the HI phase.
+Denyhosts can log to syslog by editing its configuration file.
 
 \section{Apache \& Nginx}
 To attract some web traffic, we have installed the Apache web server, the Apache PHP runtime and the \verb|mod-security| module which allows us to spoof its version information, to make it appear old and vulnerable.
