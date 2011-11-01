@@ -139,6 +139,8 @@ iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
 iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
 \end{verbatim}
 
+We are also going to filter outgoing SMTP, SIP and NetBIOS.
+
 \subsection{Kippo}
 To capture attackers that try to come in by brute-forcing SSH logins, we are using Kippo. 
 Kippo is a sandbox SSH service, used to log bruteforce attacks and the shell interaction performed by the attacker after gaining access (with a trivial password). 
@@ -181,6 +183,16 @@ We plan to install more variants of the GHH to attract more attackers, but befor
 We configured GHH to log to in CSV format, since it requires minimal setup and is easily parsed.
 %We can later reconfigure to use MySQL, if the results are not satisfactory.
 Then, we patched the GHH code to allow logging to syslog, to maintain a single, consistent point of log collection.
+
+We also hope to detect and capture a bruteforce attack or scan on generic filenames, for example \verb|passwd.txt|. 
+This will probably warn us that an attacker will try to use a dictionary attack.
+
+\subsection{Wordpress}
+
+To capture more attackers during the HI phase, we plan to use an outdated version of WordPress. 
+Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. 
+Unfortunately exploits are frequently found for Wordpress and patches are published on a regular basis. 
+We plan to use an older version of Wordpress, for example a version below version 3.0.4, to be sure that we use a version with some exploits.
 
 \subsection{Snort}
 Snort is an open source intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
