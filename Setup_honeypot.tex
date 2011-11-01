@@ -87,11 +87,50 @@ We are using a reverse tunnel from the utility machine to the honeypot.
 We use a script to allow the connection to be re-esthablished quickly when the SSH session is terminated for some reason. 
 \cite{Remote_logging}
 
+\subsection{Root}
+
+\section{Setup: Honeypot}
+
+In this section we decribe the setup of the honeypot.
+
+\subsection{scanlogd}
+
+To detect portscans we have installed the tool scanlogd.
+Per scan an entry is written to syslog.
+
+\subsection{iptables}
+To log all connection attempts coming in and going out, we have added the following rules to the iptables configuration. 
+This will also log to syslog.
+
+\emph{iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
+
+\emph{iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "}
 
 
-\subsection{Setup: Honeypot}
+\subsection{Kippo}
+To capture attackers that try to come in over ssh, we are using Kippo. 
+Kippo is used to log bruteforce attacks and the shell interaction performed by the attacker. 
+To make this as realistic as possible we have added a redicrect in the iptables configuration from port 22 to port 2222 that kippo uses. 
+Unfortunately this broke down after a while, for reasons yet unknown. 
+The reason for forwarding was not to give Kippo root capabilities.
 
-More text.
+To be able to still log on to the honeypot, we configured port 9022 to be used by ssh.
+
+\subsection{Google Hack Honeypot}
+Google Hack Honeypot (GHH) is used to attract search engine attackers. 
+These attackers will use search queries to find sensitive data, for example password files, that due to some misconfiguration ended up being indexed by a search engine like google.
+To set this up we have first installed Apache and PHP5.
+Then we configured GHH to use Comma Seperated Values, since MySQL was not installed yet on the util machine and to see if this would actually work. 
+We can later reconfigure to use MySQL, if the results are not satisfactory.
+Since GHH offers multiple setup honeypot we picked one to start with, namely GGH version 1.2 passlist.txt.
+We had no particular reason for this, only that it was easy to set up. 
+The plan was to install more variants of the GHH to attract more attackers, but before this could happen the VM's were shut down.
+
+
+\subsection{Snort}
+
+Stukje Joost en Bart.
+
 
 
 
