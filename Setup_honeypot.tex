@@ -66,7 +66,7 @@
 
 \section{Introduction}
 
-In this document we explain how we have set up the our honeypot. 
+In this document we explain how we have set up the honeypot. 
 We have decided to split up our monitoring time into two parts.
 In the first part we configure the virtual machine as a system of security `traps', also called a low-interaction (LI) honeypot, and monitor activity for one month.
 Then we will reconfigure the machine to a high-interaction (HI) honeypot, exposing real, exploitable vulnerabilities that can lead to code execution on our machine and monitor much more intently for another month. 
@@ -139,7 +139,7 @@ iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
 iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
 \end{verbatim}
 
-We are also going to filter outgoing SMTP, SIP and NetBIOS.
+We are also going to filter outgoing SMTP, SIP and NetBIOS traffic.
 
 \subsection{Kippo}
 To capture attackers that try to come in by brute-forcing SSH logins, we are using Kippo. 
@@ -191,8 +191,8 @@ This will probably warn us that an attacker will try to use a dictionary attack.
 
 To capture more attackers during the HI phase, we plan to use an outdated version of WordPress. 
 Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. 
-Unfortunately exploits are frequently found for Wordpress and patches are published on a regular basis. 
-We plan to use an older version of Wordpress, for example a version below version 3.0.4, to be sure that we use a version with some exploits.
+Exploits are found on a frequent basis for Wordpress and patches are published on a regular basis. 
+We plan to use an older version of Wordpress, for example a version below version 3.0.4, to be sure that we use a version for which public exploits exist.
 
 \subsection{Snort}
 Snort is an open source intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
