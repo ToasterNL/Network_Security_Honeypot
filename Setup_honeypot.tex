@@ -95,6 +95,12 @@ We have configured a locally installed the \verb|syslog-ng| package for our user
 
 To allow for secure SSH access, a public keypair was generated on the util machine and the associated public key was added to the honeypot's \verb|authorized_keys| file.
 
+\subsection{Monitoring}
+After collecting our syslog information, we want to somehow be alerted of interesting information automatically.
+Some seemingly appropriate projects are available under an open source license, and we have not yet decided which one we want to use.
+A customizable solution is absolutely necessary owing to the wide range of incoming information and the modifications made to a few of the installed software packages specifically for logging to syslog.
+Next to any off-the-shelf solution, some more custom scripting seems inevitable here.
+
  %which makes it possible to use SSH to tunnel the TCP traffic.
 
 %\subsection{Root}
@@ -129,7 +135,9 @@ To make this as realistic as possible we have added a redirect in the iptables c
 Unfortunately this broke down around the time the firewall was being reconfigured, for unclear reasons. 
 The reason for forwarding was not to give Kippo root capabilities.
 
-To be able to still log on to the honeypot, we configured SSH to use port 9022.
+To be able to still log on to the honeypot, we configured our real SSH service to use port 9022.
+
+We have patched Kippo to log messages to syslog.
 
 \subsection{DenyHosts}
 If someone finds out our real SSH port changed to 9022, they might try to break in via our real SSH service.
@@ -153,34 +161,27 @@ We configured GHH to log to in CSV format, since it requires minimal setup and i
 Then, we patched the GHH code to allow logging to syslog, to maintain a single, consistent point of log collection.
 
 \subsection{Snort}
-Snort is an intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
+Snort is an open source intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
 Snort was designed to be used as a network IDS, however we will be running it on our host machine, effectively making it a host-based IDS.
 
 Unfortunately the VM network went down before we were able to complete our Snort configuration.
-We intend to set up Snort using a predefined rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
-The rules that we will be using are based on a honeypot rule-set. % TODO reference
-Included are rules on detecting backdoors, viruses, DDOS, spam and other abuse.
-These rules will be tweaked if the results are unsatisfactory.
-If a rule is triggered, snort will log an alert.
+We intend to set up Snort using the community rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
+Included are rules on detecting exploit attempts on various common services like HTTP, FTP, SMTP, and many more.
 
-We will configure Snort to send alerts to syslog, and to log its packet captures to some form of read-only filesystem mounted from our monitoring machine (yet to be decided).
-We will install a script like \verb|auto-oink| to automatically retrieve the latest community Snort rules.
+Considering we are in a VM we might be limited in RAM, which Snort seems to require a lot of.
+The configured rules will have to be minimal to avoid exhausting resources.
 
-\subsection{Kernel Module}
+We will configure Snort to send alerts to syslog, and to log its packet captures to a read-only \verb|sshfs| mounted from our monitoring machine.
+We will install a script like \verb|oinkmaster| to automatically retrieve the latest community Snort rules, with a Snort API key registered specifically for this project.
 
-For HI phase, we would like to have a way to audit the commandline. 
-To make it harder to detect this we would like to do this in the kernel.
-We could edit auditd for the user, but this wil be too noticiable. 
-A tool we can use is Sebek, but this is outdated and not maintained.
-So we have started work on our own kernel module, which will hopefully be ready before we start the HI phase.
+\subsection{Auditing}
+For the HI phase, we would like to have a way to audit commandline interaction. 
+Various options exist, such as the user-space \verb|auditd| daemon, but to make auditing harder to detect this we feel it would be best to look for a kernel-space solution.
+An auditing module developed by the Honeynet project called Sebek can provide this, but is unmaintained and outdated.
+The grsec kernel patches also provide auditing from kernel space, but we were advised against replacing the stock kernel.
 
-
-
-
-
-
-
-
+We are still investigating the best way to achieve useful auditing.
+A self-written kernel module that hooks system calls, albeit limited, might suffice to get some much needed auditing information from the honeypot.
 
 
 \bibliographystyle{alpha}
