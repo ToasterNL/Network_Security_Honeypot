@@ -1,0 +1,57 @@
+Index: utils/createfs.py
+===================================================================
+--- utils/createfs.py	(revision 214)
++++ utils/createfs.py	(working copy)
+@@ -16,6 +16,8 @@
+                 '/root/.bash_history',
+                 ):
+             continue
++        if 'kerckhoffs' in path or 'kippo' in path:
++            continue
+ 
+         try:
+             if os.path.islink(path):
+Index: kippo/core/honeypot.py
+===================================================================
+--- kippo/core/honeypot.py	(revision 214)
++++ kippo/core/honeypot.py	(working copy)
+@@ -17,6 +17,7 @@
+ from kippo.core.userdb import UserDB
+ from kippo.core.config import config
+ import commands
++import syslog
+ 
+ import ConfigParser
+ 
+@@ -491,6 +492,11 @@
+             (self.transport.getPeer().host, self.transport.getPeer().port,
+             self.transport.getHost().host, self.transport.getHost().port,
+             self.transport.sessionno)
++        syslog.syslog(syslog.LOG_INFO, 'KIPPO New connection: %s:%s (%s:%s) [session: %d]' % \
++            (self.transport.getPeer().host, self.transport.getPeer().port,
++            self.transport.getHost().host, self.transport.getHost().port,
++            self.transport.sessionno)
++        )
+         self.interactors = []
+         self.logintime = time.time()
+         self.ttylog_open = False
+@@ -555,6 +561,7 @@
+ 
+     # Special delivery to the loggers to avoid scope problems
+     def logDispatch(self, sessionid, msg):
++        syslog.syslog(syslog.LOG_INFO, 'KIPPO session %s: %s' % (sessionid, msg))
+         for dblog in self.dbloggers:
+             dblog.logDispatch(sessionid, msg)
+ 
+@@ -644,9 +651,11 @@
+     def checkUserPass(self, username, password):
+         if UserDB().checklogin(username, password):
+             print 'login attempt [%s/%s] succeeded' % (username, password)
++            syslog.syslog(syslog.LOG_INFO, 'KIPPO login attempt [%s/%s] succeeded' % (username, password))
+             return True
+         else:
+             print 'login attempt [%s/%s] failed' % (username, password)
++            syslog.syslog(syslog.LOG_INFO, 'KIPPO login attempt [%s/%s] failed' % (username, password, ))
+             return False
+ 
+ def getRSAKeys():
