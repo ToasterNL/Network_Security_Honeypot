@@ -1,0 +1,3 @@
+deb http://ppa.launchpad.net/honeynet/nightly/ubuntu lucid main 
+deb-src http://ppa.launchpad.net/honeynet/nightly/ubuntu lucid main 
+

@@ -1,0 +1,1 @@
+30 00 * * * oinkmaster -o /home/kerckhoffs/honeypot_software/suricata/build/rules/ -q
