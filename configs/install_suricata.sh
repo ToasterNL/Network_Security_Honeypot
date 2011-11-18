@@ -14,6 +14,7 @@ cd lib
 make install
 
 cd oisf
+sh autogen.sh
 ./configure --enable-pfring --with-libpfring-includes=`pwd`/../PF_RING/userland/lib/ --prefix=`pwd`/../build/
 make
 make install
