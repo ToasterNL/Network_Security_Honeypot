@@ -1,0 +1,2 @@
+alias monitor="tail -n 4096 -f ~/logs/syslog-ng.log | grep -vE '(snmpd|New Conn|CRON|su\[|sudo:|sshd|last message repeated|SNMP request udp|\(spp_ssh\) Protocol mismatch|SIP TCP/IP message flooding directed to SIP proxy|SNMP missing community string attempt|reject connection from|dionaea: attackid|dionaea: accepted connection|SMB did not get enough data)'"
+alias logged_ips="egrep -o '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' ~/logs/syslog-ng.log | sort | uniq | sort"
