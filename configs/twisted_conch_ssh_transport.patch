@@ -1,3 +1,4 @@
+# https://ghosthunter.googlecode.com/svn/trunk/metasploit/auxiliary/scanner/ssh/ssh_hydra.rb
 <         #self.sendKexInit()
 ---
 >         self.sendKexInit()
