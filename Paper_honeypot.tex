@@ -27,16 +27,13 @@
 \newcommand{\tab}{\hspace*{2em}}
 
 \newcommand{\tocheck}[1]{{\bf !?: #1 :!?}}
-\newcommand{\OBA}{Online behavioural advertising }
-\newcommand{\oba}{online behavioural advertising }
-\newcommand{\ePD}{ePrivacy Directive }
-\newcommand{\DPD}{Data Protection Directive }
+%\newcommand{\OBA}{Online behavioural advertising }
 
 \frenchspacing
 
 %-------------------------------- Title ----------------------------------
 
-\title{\textbf{Law in Cyberspace\\ \emph{Web Analytics and Online Personalisation}}}
+\title{\textbf{Honeypot Assignment: \\ \emph{Group Contagiarium}}}
 \author{Aram Verstegen, \tocheck{studentnummer Utwente} \\
 	 Mark Vijfvinkel, 1275194 \\
 	 Bart Lutgens, \tocheck{studentnummer Utwente} \\
@@ -49,6 +46,15 @@
 
 
 \section{Introduction}
+In this paper we will try to present an overview of the data we have collected from the honeypot and explain the different attacks that were waged against it. 
+In the second section we will describe the changes we have made to the setup during the "Waiting for hackers" phase. 
+The third section will present an overview of various statistics we have collected from the logfiles, e.g. number of IP-addresses, countries and attack types. 
+In the fourth section we will discuss which attacks took place against the different services the honeypot was running e.g. SSH and MySQL.
+In order to discover the sophisticationof the attacks, we will try to present possible connections between an attack on one service and an attack on a different service, in the fifth section.
+The sixth section will conclude our findings. 
+Finally we will discuss this project and provide some improvements. 
+
+
 
 
 \section{Setup}
@@ -68,15 +74,30 @@ In this section we will discuss the statistical data that have been gathered fro
 
 \section{Attacks on the different services}
 \label{Attacks}
+During phase 2 we have monitored the honeypot closely and collected data about different attacks against the honeypot. In this section we will discuss the attacks against the services the honeypot was running.
 
 
 
 \section{Connection between the attacks}
 \label{Connection}
+In this section we will correlate the data about attacks against one service against the data of attacks of a different service. We will try to look for a pattern or similarities in this data and determine if the attack was more sophisticated.
+
 
 \section{Conclusion}
 \label{Conclusion}
+From Section \ref{Connection} we can conclude that...
 
+
+
+\section{Discussion}
+\label{Discussion}
+In this section we would like to discuss some issues we encountered during the honeypotproject. 
+
+\begin{itemize}
+\item Low/High interaction phase
+\item GHH
+\item etc
+\end{itemize}
 
 
 
