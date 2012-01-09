@@ -223,6 +223,44 @@ In this section we will discuss the statistical data that have been gathered fro
 \label{Attacks}
 During phase 2 we have monitored the honeypot closely and collected data about different attacks against the honeypot. In this section we will discuss the attacks against the services the honeypot was running.
 
+\begin{itemize}
+\item Kippo
+
+The first service we will be talking about is Kippo. During the interaction phase we've had 2610 login attempt on our Kippo client and 3871 connections. 54 of these attempts were succesfull.
+We have made a top 5 of most tried usernames in these login attempts:
+
+\begin{itemize}
+\item   2206 root
+\item     39 admin
+\item     26 bin
+\item     20 w000t
+\item     19 oracle
+\item     19 jenny
+\end{itemize}
+
+It is not entirely unexpected that the username "root" is tried most ofted. 
+We assume the username "w000t" is a backdoor user created in one or more exploits.
+Interesting to note is that "jenny" is the name of a fake employee listed on the our honeypot website.
+Most usernames were tried multiple times, even if they made no sense to us (for instance msnayeem_iitd tried to log in four times).
+
+These are the top 5 passwords tried:
+
+\begin{itemize}
+\item     55 
+\item     28 123456
+\item     20 111111
+\item     16 root
+\item     16 admin
+\end{itemize}
+
+As you can see, the most tried password is a blank password. The other passwords in this top 5 are all standard password that can be found in a dictionary attack. It is nice to note that 123456 was accepted by our system.
+
+An interesting situation was someone that tried to log in to the honeypot with the user root, just trying a list of years (1960-1980). He obviously thought we would use a birthyear as our password (which was not the case).
+
+\item HTTP
+In three weeks, a total of 76002 HTTP-requests were received by our Apache server originating from 176 unique IP addresses. 4369 of these requests were 404'd.
+
+These 404's are interesting because they show us what adresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. Also serveral client IDs are visible in these logs: "\verbatim{"-"}", which is a blank user/client ID, (3432 attempts), "MiRRORS" (310 attempts), "ZmEu" (41 attempts) and "Morfeus Fucking Scanner" (4 attempts). These seem to be search engine crawlers. It is interesting to see that both several "\verbatim{"-"}" and several "ZmEu" users are scanning for "/w00tw00t.at.blackhats.romanian.anti-sec:)" and "/w00tw00t.at.ISC.SANS.DFind:)". The attackers using "ZmEu" found one valid path: /phpmyadmin/, however he did not exploit this. Morfeus Fucking Scanner was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file. We expected to see several occurances of "/robots.txt" because this is a common way to start when using a search engine crawler, but none were found.
 
 
 \section{Connection between the attacks}
@@ -232,13 +270,36 @@ In this section we will correlate the data about attacks against one service aga
 
 \section{Conclusion}
 \label{Conclusion}
-From Section \ref{Connection} we can conclude that...
+From Section \ref{Connection} we can conclude that our honeypot was not as popular as we had hoped it would be. Because we chose not to advertise, we solely relied on the hackers abilities to find us by for example portscans. The number of attacks on us was therefore not high and neither was the depth of the attacks. 
 
 
 
 \section{Discussion}
 \label{Discussion}
 In this section we would like to discuss some issues we encountered during the honeypotproject. 
+
+\begin{itemize}
+\item Low/High interaction phase
+
+To see what the best approach is to a honeypot project, we decided to split the project in a Low and a High interaction phase. Unfortunately the High interaction phase yielded not much more results than the low interaction phase. Additionally we were a little late in switching to the HI phase. So in hindsight we don't think it was worth switching to the high interaction phase.
+
+\item Lack of interest
+
+We decided to make this honeypot as realistic as possible, this meant: not advertising our honeypot on IRC-channels or 4Chan. Our motivation was that in nonhoneypot circumstances this would also not be done. So for example advertising the IP address of the honeypot would attract a lot more hackers than a normal server would. So the results would not be on par with attacks against a normal server. In the High interaction phase we had a website that attracted people to our honeypot, which is a more realistic approach to attracting hackers.
+
+\item DenyHosts
+
+To make sure our real SSH port would not be brute forced, we added DenyHost to the port. We soon realized that this was a very effective countermeasurement versus intruders: both Bart and Joost were blocked due to their lack of Linux knowledge. Luckely Mark and Aram were able to unblock the other two.
+
+\item Linux knowledge
+
+Two of the teammembers had limited Linux experience. It took some time for them to understand how Linux commandline works. Fortunately we had two guru's in the group that were able to teach the newbies.
+
+\item Google Hack Honeypot
+
+The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were nonexistent and we were switching to HI later on, we decided not to use it. 
+
+\end{itemize}
 
 \begin{itemize}
 \item Low/High interaction phase
