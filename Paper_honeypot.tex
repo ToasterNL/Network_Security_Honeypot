@@ -140,7 +140,7 @@ To be able to still log on to the honeypot, we configured our real SSH service t
 
 Furthermore, we patched Kippo to log messages to syslog.
 
-During the second phase of the project, we noticed that of the succesfull bruteforce attempts against Kippo, none actually tried to continue and explore or use the honeypot. Running a default portscan with Metasploit revealed that it can detect if Kippo is being used. We thought this explained why nobody tried to log in. To solve this problem, we adjusted the Kippo configuration so that Metasploit could recognize Kippo. Unfortunately did this not lead to actual exploration or use of the honeypot. 
+During the second phase of the project, we noticed that of the succesfull bruteforce attempts against Kippo, none actually tried to continue and explore or use the honeypot. Running a default portscan with Metasploit revealed that it can detect if Kippo is being used. We thought this explained why nobody tried to log in. To solve this problem, we adjusted the Kippo configuration so that Metasploit could not recognize Kippo. Unfortunately did this not lead to actual exploration or use of the honeypot. 
 
 \subsubsection{DenyHosts}
 If someone found out that our real SSH port was changed to 9022, they might try to break in through the real SSH service.
@@ -176,29 +176,27 @@ We hoped to detect and capture a bruteforce attack or scan on generic filenames,
 Unfortunately GGH broke down after the Virtual Machines were shut down, we were unable to get it back running and therefore decided not invest more time and effort into it. We also believe it would not have brought us more interesting data.
 
 \subsubsection{Website}
+To attract more activity we decided to create a fake website that would resemble a website of the University of Twente. To make it more appealing in ways of computing power we used the department of Partical Physics and Astronomy as a cover.
+On the website we also put some information about a fictive person (Jenny Abott) would manage the servers and website. So we created a useraccount with the same login and password, namely Jenny. This way a more sophisticated attack would be possible. An attacker would look at the website, determine if it is intresing to attack and then connect to Kippo to log in as Jenny.
 
+\subsubsection{Wordpress}
+In order to make the website more vunerable and appealing to hackers, we installed an out of date version of Wordpress. Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. Exploits are found on a frequent basis for Wordpress and therefore patches are published frequently. In the first week of December we installed version 2.8.4 of Wordpress on the honeypot.
 
-
-\subsection{Wordpress}
-
-To capture more attackers during the HI phase, we plan to use an outdated version of WordPress. 
-Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. 
-Exploits are found on a frequent basis for Wordpress and patches are published on a regular basis. 
-We plan to use an older version of Wordpress, for example a version below version 3.0.4, to be sure that we use a version for which public exploits exist.
-
-\subsection{Snort}
+\subsection{Snort and Suricata}
 Snort is an open source intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
 Snort was designed to be used as a network IDS, however we will be running it on our host machine, effectively making it a host-based IDS.
 
-Unfortunately the VM network went down before we were able to complete our Snort configuration.
-We intend to set up Snort using the community rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
+We set up Snor using the community rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
 Included are rules on detecting exploit attempts on various common services like HTTP, FTP, SMTP, and many more.
 
-Considering we are in a VM we might be limited in RAM, which Snort seems to require a lot of.
-The configured rules will have to be minimal to avoid exhausting resources.
+We configured Snort to send alerts to syslog, and to log its packet captures to the read-only \verb|sshfs| mounted from our monitoring machine.
+We also installed \verb|oinkmaster| to automatically retrieve the latest community Snort rules, with a Snort API key registered specifically for this project.
 
-We will configure Snort to send alerts to syslog, and to log its packet captures to the read-only \verb|sshfs| mounted from our monitoring machine.
-We will install a script like \verb|oinkmaster| to automatically retrieve the latest community Snort rules, with a Snort API key registered specifically for this project.
+Unfortunately we noticed that Snort required a lot of resources and was slowing down the honeypot. Instead of Snort we decided to use Suricata, which does the same thing, but does it more efficiently. 
+
+%Considering we are in a VM we might be limited in RAM, which Snort seems to require a lot of.
+%The configured rules will have to be minimal to avoid exhausting resources.
+
 
 \subsection{Auditing}
 For the HI phase, we would like to have a way to audit commandline interaction. 
@@ -251,6 +249,6 @@ In this section we would like to discuss some issues we encountered during the h
 %%% REFS %%%
 
 \bibliographystyle{plain} % amsalpha
-\bibliography{assignment2}
+\bibliography{ref_honeypot}
 
 \end{document}
