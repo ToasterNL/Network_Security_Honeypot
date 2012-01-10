@@ -284,11 +284,11 @@ Due to the well-chosen name we could not find additional information on this cli
 \item ``ZmEu'' (41 attempts)
 
 The attackers using ``ZmEu'' found one valid path: /phpmyadmin/, however he did not exploit this. 
-It is interesting to see that both several \emph{''-''} and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)''
+It is interesting to see that both several \emph{''-''} and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)'' These clients are alleged to be for reconnacance purposes.
 
 \item ``Morfeus Fucking Scanner'' (4 attempts)
 
-``Morfeus Fucking Scanner'' was used by one attacker, that solely searched for /user/soapCaller.bs. We could not find anything on this .bs file.
+``Morfeus Fucking Scanner'' was used by one attacker, that solely searched for /user/soapCaller.bs. Multiple sources say this might be a Drupal exploit.
 \end{itemize}
 
 We expected to see several occurrences of ``/robots.txt'' because this is a common way to start when using a search engine crawler, but none were found.
@@ -310,9 +310,26 @@ As we looked further into the Dionaea logfiles we found that MSSQL was connected
 
 
 
+
 \section{Connection between the attacks}
 \label{Connection}
 In this section we will correlate the data about attacks against one service against the data of attacks of a different service. We will try to look for a pattern or similarities in this data and determine if the attack was more sophisticated.
+
+Three clients connected to both HTTP and Kippo, which raised our suspision:
+\begin{itemize}
+\item 58.17.52.14
+
+This citizen of the Peoples Republic of China poked every possible entrance, in two consequental days: he made a connection to Kippo and disconnected immideately. He also requested the main / folder via HTTP, using the client "-". Scanlogd also reported scans on port 80, 8080, 3128, 9415, 8909, 9592, 1080, 443. Unfortunately for us we were not attractive for him to return and actually break in.
+
+\item 61.190.172.2
+
+On four occasions this inhabitant of China probed us, split over 4 weeks. He also just connected to Kippo (Suricata reported a SSH-scan) and disconnected: he did this for fourty times in 3 minutes. Interestingly enough he was one of the users of the Morfius Fucking Scanner client: only requesting the /user/soapCaller.bs file.
+
+\item 125.88.75.199
+
+The last prober was also from China. On November 22th he connected to Kippo to automaticly disconnect again. He also requested the / folder via HTTP with the "-" client. He was only seen at this occasion.
+
+\end{itemize}
 
 
 \section{Conclusion}
