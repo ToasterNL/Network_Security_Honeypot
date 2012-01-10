@@ -31,6 +31,8 @@
 
 \frenchspacing
 
+\usepackage{booktabs}
+\usepackage[parfill]{parskip}
 %-------------------------------- Title ----------------------------------
 
 \title{\textbf{Honeypot Assignment: \\ \emph{Group Contagiarium}}}
@@ -223,30 +225,33 @@ During phase 2 we have monitored the honeypot closely and collected data about d
 The first service we will be talking about is Kippo. During the interaction phase we've had 2610 login attempt on our Kippo client and 3871 connections. 54 of these attempts were succesfull.
 We have made a top 5 of most tried usernames in these login attempts:
 
-\begin{itemize}
-\item   2206 root
-\item     39 admin
-\item     26 bin
-\item     20 w000t
-\item     19 oracle
-\item     19 jenny
-\end{itemize}
+\begin{tabular}{|l|r|}
+\hline
+2206 & root \\ \hline
+39 & admin \\ \hline
+26 & bin \\ \hline
+20 & w000t \\ \hline
+19 & oracle \\ \hline
+19 & jenny \\ \hline
+\end{tabular}
 
 It is not entirely unexpected that the username "root" is tried most ofted. 
 We assume the username "w000t" is a backdoor user created in one or more exploits.
 Interesting to note is that "jenny" is the name of a fake employee listed on the our honeypot website.
 Most usernames were tried multiple times, even if they made no sense to us for instance msnayeem\_iitd tried to log in four times.
 
-
 These are the top 5 passwords tried:
 
-\begin{itemize}
-\item     55 
-\item     28 123456
-\item     20 111111
-\item     16 root
-\item     16 admin
-\end{itemize}
+
+\begin{tabular}{|l|r|}
+\hline
+55 &  \\ \hline
+28 & 123456 \\ \hline
+20 & 111111 \\ \hline
+16 & root \\ \hline
+16 & admin \\ \hline
+\end{tabular}
+
 
 As you can see, the most tried password is a blank password. The other passwords in this top 5 are all standard password that can be found in a dictionary attack. It is nice to note that 123456 was accepted by our system.
 
@@ -255,9 +260,29 @@ An interesting situation was someone that tried to log in to the honeypot with t
 \subsection{HTTP}
 In three weeks, a total of 76002 HTTP-requests were received by our Apache server originating from 176 unique IP addresses. 4369 of these requests were 404'd.
 
-These 404's are interesting because they show us what adresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. 
+These 404's are interesting because they show us what addresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. 
 
-Also serveral client IDs are visible in these logs: "\verbatim{"-"}", which is a blank user/client ID, (3432 attempts), "MiRRORS" (310 attempts), "ZmEu" (41 attempts) and "Morfeus Fucking Scanner" (4 attempts). These seem to be search engine crawlers. It is interesting to see that both several "\verbatim{"-"}" and several "ZmEu" users are scanning for "/w00tw00t.at.blackhats.romanian.anti-sec:)" and "/w00tw00t.at.ISC.SANS.DFind:)". The attackers using "ZmEu" found one valid path: /phpmyadmin/, however he did not exploit this. "Morfeus Fucking Scanner" was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file. We expected to see several occurances of "/robots.txt" because this is a common way to start when using a search engine crawler, but none were found.
+Also serveral client IDs are visible in these logs: 
+
+\begin{itemize}
+\item ``\emph{``-''}'' (3432 attempts)
+
+This is a blank user/client ID.
+
+\item ``MiRRORS'' (310 attempts)
+
+\tocheck{Info over MiRRORS}
+
+\item ``ZmEu'' (41 attempts)
+
+The attackers using ``ZmEu'' found one valid path: /phpmyadmin/, however he did not exploit this. It is interesting to see that both several ``\emph{''-''}'' and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)''
+
+\item ``Morfeus Fucking Scanner'' (4 attempts)
+
+``Morfeus Fucking Scanner'' was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file.
+\end{itemize}
+
+We expected to see several occurances of ``/robots.txt'' because this is a common way to start when using a search engine crawler, but none were found.
 
 
 \section{Connection between the attacks}
