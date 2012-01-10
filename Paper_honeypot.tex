@@ -293,6 +293,22 @@ It is interesting to see that both several \emph{''-''} and several ``ZmEu'' use
 
 We expected to see several occurrences of ``/robots.txt'' because this is a common way to start when using a search engine crawler, but none were found.
 
+\subsection{Dionaea}
+As mentioned in Section \ref{Setup} Dionaea runs several services. In the table below we will show how many times those services got connected.
+
+\begin{tabular}{|l|c|r|}
+\hline
+Service & Port & Number of connections \\ \hline
+MSSQL  & 1433 & 1632 \\ \hline
+MS SMB filesharing & 445 & 67 \\ \hline
+FTP & 21 & 55 \\ \hline
+MySQL & 3306 & 54 \\ \hline
+Session Initiation Protocol & 5060 & 9 \\ \hline
+\end{tabular}
+
+As we looked further into the Dionaea logfiles we found that MSSQL was connected to from 95.82.11.28, which is in Iran, 1414 times. However, the SMB filesharing, FTP and SIP were mostly connected from one IP, namely 130.89.165.58. This IP is from Twente University, so probably it was another student.
+
+
 
 \section{Connection between the attacks}
 \label{Connection}
