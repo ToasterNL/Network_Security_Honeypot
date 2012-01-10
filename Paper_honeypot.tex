@@ -215,6 +215,7 @@ During the High Interaction phase we used a kernel module that hooked execve (ne
 In this section we will discuss the statistical data that have been gathered from our logfiles. 
 The logged connection attempts have been processed to group them by the IP address' originating country through the use of WHOIS directory service information.
 It is worthwhile noting that a significant number of connecting hosts could not be referenced to RWHOIS information.
+In these cases we have attempted to resolve the missing information by making use of reverse DNS queries and grouping by associated top level domain.
 Also note that these graphs display all logged connection attempts rather than successful connections, giving us a general view of which ports attract attention.
 
 For clarity we have chosen to graph only the 10 most active originating countries, and make use of a logarithmic scale to represent the spectrum of port numbers.
