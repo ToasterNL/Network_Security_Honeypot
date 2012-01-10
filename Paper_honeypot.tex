@@ -56,8 +56,6 @@ The sixth section will conclude our findings.
 Finally we will discuss this project and provide some improvements. 
 
 
-
-
 \section{Setup}
 \label{Setup}
 
@@ -220,8 +218,7 @@ In this section we will discuss the statistical data that have been gathered fro
 \label{Attacks}
 During phase 2 we have monitored the honeypot closely and collected data about different attacks against the honeypot. In this section we will discuss the attacks against the services the honeypot was running.
 
-\begin{itemize}
-\item Kippo
+\subsection{Kippo}
 
 The first service we will be talking about is Kippo. During the interaction phase we've had 2610 login attempt on our Kippo client and 3871 connections. 54 of these attempts were succesfull.
 We have made a top 5 of most tried usernames in these login attempts:
@@ -238,7 +235,8 @@ We have made a top 5 of most tried usernames in these login attempts:
 It is not entirely unexpected that the username "root" is tried most ofted. 
 We assume the username "w000t" is a backdoor user created in one or more exploits.
 Interesting to note is that "jenny" is the name of a fake employee listed on the our honeypot website.
-Most usernames were tried multiple times, even if they made no sense to us (for instance msnayeem_iitd tried to log in four times).
+Most usernames were tried multiple times, even if they made no sense to us for instance msnayeem\_iitd tried to log in four times.
+
 
 These are the top 5 passwords tried:
 
@@ -254,17 +252,12 @@ As you can see, the most tried password is a blank password. The other passwords
 
 An interesting situation was someone that tried to log in to the honeypot with the user root, just trying a list of years (1960-1980). He obviously thought we would use a birthyear as our password (which was not the case).
 
-\item HTTP
+\subsection{HTTP}
 In three weeks, a total of 76002 HTTP-requests were received by our Apache server originating from 176 unique IP addresses. 4369 of these requests were 404'd.
 
-<<<<<<< HEAD
-These 404's are interesting because they show us what adresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. Also serveral client IDs are visible in these logs: "\verbatim{"-"}", which is a blank user/client ID, (3432 attempts), "MiRRORS" (310 attempts), "ZmEu" (41 attempts) and "Morfeus Fucking Scanner" (4 attempts). These seem to be search engine crawlers. It is interesting to see that both several "\verbatim{"-"}" and several "ZmEu" users are scanning for "/w00tw00t.at.blackhats.romanian.anti-sec:)" and "/w00tw00t.at.ISC.SANS.DFind:)". The attackers using "ZmEu" found one valid path: /phpmyadmin/, however he did not exploit this. Morfeus Fucking Scanner was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file. We expected to see several occurances of "/robots.txt" because this is a common way to start when using a search engine crawler, but none were found.
-=======
 These 404's are interesting because they show us what adresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. 
 
 Also serveral client IDs are visible in these logs: "\verbatim{"-"}", which is a blank user/client ID, (3432 attempts), "MiRRORS" (310 attempts), "ZmEu" (41 attempts) and "Morfeus Fucking Scanner" (4 attempts). These seem to be search engine crawlers. It is interesting to see that both several "\verbatim{"-"}" and several "ZmEu" users are scanning for "/w00tw00t.at.blackhats.romanian.anti-sec:)" and "/w00tw00t.at.ISC.SANS.DFind:)". The attackers using "ZmEu" found one valid path: /phpmyadmin/, however he did not exploit this. "Morfeus Fucking Scanner" was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file. We expected to see several occurances of "/robots.txt" because this is a common way to start when using a search engine crawler, but none were found.
-
->>>>>>> b23ff5541ec52f98e7cb8761679e0580b63fe136
 
 
 \section{Connection between the attacks}
@@ -306,15 +299,12 @@ Two of the teammembers had limited Linux experience. It took some time for them 
 
 The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were nonexistent and we were switching to HI later on, we decided not to use it. 
 
-<<<<<<< HEAD
 \end{itemize}
 
 \begin{itemize}
 \item Low/High interaction phase
 \item GHH
 \item etc
-=======
->>>>>>> b23ff5541ec52f98e7cb8761679e0580b63fe136
 \end{itemize}
 
 
