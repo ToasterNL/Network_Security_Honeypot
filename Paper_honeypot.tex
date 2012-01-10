@@ -53,7 +53,7 @@ In this paper we will try to present an overview of the data we have collected f
 In the second section we will describe the changes we have made to the setup during the "Waiting for hackers" phase. 
 The third section will present an overview of various statistics we have collected from the logfiles, e.g. number of IP-addresses, countries and attack types. 
 In the fourth section we will discuss which attacks took place against the different services the honeypot was running e.g. SSH and MySQL.
-In order to discover the sophisticationof the attacks, we will try to present possible connections between an attack on one service and an attack on a different service, in the fifth section.
+In order to discover the sophistication of the attacks, we will try to present possible connections between an attack on one service and an attack on a different service, in the fifth section.
 The sixth section will conclude our findings. 
 Finally we will discuss this project and provide some improvements. 
 
@@ -61,7 +61,7 @@ Finally we will discuss this project and provide some improvements.
 \section{Setup}
 \label{Setup}
 
-On the 1st of November we delivered our initial setup document, however during the "Waiting for hackers" phase we have made adjustments to the setup in order to attract more activity to the honeypot. In this section we will present the initial setup and in addittion to that, discuss the changes that were made.
+On the 1st of November we delivered our initial setup document, however during the "Waiting for hackers" phase we have made adjustments to the setup in order to attract more activity to the honeypot. In this section we will present the initial setup and in addition to that, discuss the changes that were made.
 
 %%%%MOET NOG WORDEN HERZIEN%%%%%
 
@@ -71,69 +71,49 @@ Therefore we have moved it to the default syslog configuration file.
 
 \subsubsection{Kippo}
 During the second phase of the project, we noticed that of the succesful dictionary-based bruteforce attempts against Kippo, none actually tried to continue and explore or use the honeypot.
-Running an nmap portscan from Metasploit (which adds to the information provided by nmap) revealed that it can detect if Kippo is being used.
-This doesn't explain why people should refrain from logging in after a successful dictionary attack
+Running an \verb|nmap| portscan from the Metasploit framework (which adds to the information provided by \verb|nmap|) revealed that it can be detected if Kippo (or rather Python's twisted framework) is being used.
+We learned that twisted can be identified because it sends the supported ciphers during the key exchange phase before it has been prompted to do so.
+Still, this doesn't explain why people should refrain from logging in after a successful dictionary attack, as a sophisticated attacker would not pursue a dictionary attack if he were aware of the service acting as a honeypot.
 
-\subsubsection{DenyHosts}
-If someone found out that our real SSH port was changed to 9022, they might try to break in through the real SSH service.
-To make sure no bruteforce attacks could be done on this port, DenyHosts was installed.
-This service blocks IP-addresses that try to log in more than 3 times with the wrong password by adding them to the \verb|hosts.deny| file.
-The hosts listed there are blacklisted on the machine, but we can edit them if needed.
 
-%Denyhosts can log to syslog by editing its configuration file.
-
-\subsection{Apache \& Nginx}
-To attract web traffic, we installed the Apache web server, the Apache PHP runtime and the \verb|mod-security| module which allows us to spoof its version information, to make it appear old and vulnerable.
-The Nginx webserver is installed as a reverse proxy in front of Apache, which runs on local port 8080.
-This provides 2 layers of logging (to files), and Nginx's superior transparent caching mechanism allows us to avoid exhausting our resources with scripting languages, should we have ever faced an application-layer DoS attack (Nginx appears quite resilient against those).
-
-Nginx has been compiled from source and was patched to send the spoofed Apache version header as well.
-We will configure both services to log to our \verb|sshfs| mount.
-
-\subsubsection{Google Hack Honeypot}
-Google Hack Honeypot (GHH) is designed to be used to attract search engine attackers. 
-These attackers will use search queries to find sensitive data, for example password files, that due to some misconfiguration ended up being indexed by a search engine like Google.
-GHH allows logging of these requests to a MySQL database or Comma Seperated Value (CSV) file.
-
-Since GHH offers multiple search targets, we picked one to start with, namely GGH version 1.2 passlist.txt.
-We had no particular reason for this, only that it was easy to set up. 
-%We plan to install more variants of the GHH to attract more attackers, but before this could happen the VM's were shut down.
-
-%To set up GHH we have first installed Apache and PHP5.
-We configured GHH to log to in CSV format, since it requires minimal setup and is easily parsed.
-%We can later reconfigure to use MySQL, if the results are not satisfactory.
-Then, we patched the GHH code to allow logging to syslog, to maintain a single, consistent point of log collection.
-
-We hoped to detect and capture a bruteforce attack or scan on generic filenames, for example \verb|passwd.txt|, because this would probably have warned us that an attacker will try to use a dictionary attack.
-Unfortunately GGH broke down after the Virtual Machines were shut down, we were unable to get it back up running and therefore decided not invest more time and effort into it. We also believe it would not have brought us more interesting data.
+\subsubsection{Google hack honeypot}
+We hoped to detect and capture a brute force attack or scan on generic filenames, for example \verb|passwd.txt|, because this would probably have warned us that an attacker will try to use a dictionary attack.
+In retrospect, given that our honeypot does not provide an actual service, it is easy to identify dictionary-based scans in our logs.
+Unfortunately our configured GGH broke after an upgrade, and we decided not to spend more time on configuring it.
+Through other teams we became aware of the HIHAT software package, which might be a more useful alternative.
+%TODO references?
 
 \subsubsection{Website}
-To attract more activity we decided to create a fake website that would resemble a website of the University of Twente. To make it more appealing in ways of computing power we used the department of Partical Physics and Astronomy as a cover.
-On the website we also put some information about a fictive person (Jenny Abott) would manage the servers and website. So we created a useraccount with the same login and password, namely Jenny. This way a more sophisticated attack would be possible. An attacker would look at the website, determine if it is intresing to attack and then connect to Kippo to log in as Jenny.
+To attract more activity we decided to create a fake website that would resemble a website of the University of Twente. To make it more appealing in ways of computing power we assumed the fictional identity of ``The department of Partical Physics and Astronomy of the University of Twente'' as a cover.
+On the website we also put some information about a fictive person (Jenny Abbott) would manage the servers and website. So we created a user account with the same login and password, namely Jenny. This way a more sophisticated attack would be possible. An attacker would look at the website, determine if it is interesting to attack and then connect to Kippo to log in as Jenny.
 
 \subsubsection{Wordpress}
-In order to make the website more vunerable and appealing to hackers, we installed an out of date version of Wordpress. Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. Exploits are found on a frequent basis for Wordpress and therefore patches are published frequently. In the first week of December we installed version 2.8.4 of Wordpress on the honeypot.
+In order to make the website more vulnerable and appealing to hackers, we installed an out of date version of Wordpress. Wordpress is software, powered by PHP and MySQL, that can be used to easily create websites or blogs and manage them via the content management system. Exploits are found on a frequent basis for Wordpress and therefore patches are published frequently. In the first week of December we installed version 2.8.4 of Wordpress on the honeypot.
 
 \subsubsection{Snort and Suricata}
-Snort is an open source intrusion detection system (IDS) that uses realtime traffic analysis and packet logging on internet protocol networks.
-Snort was designed to be used as a network IDS, however we will be running it on our host machine, effectively making it a host-based IDS.
-
-We set up Snor using the community rule-set that will only alert on suspicious network behaviour, but do nothing to prevent it. 
-Included are rules on detecting exploit attempts on various common services like HTTP, FTP, SMTP, and many more.
-
-We configured Snort to send alerts to syslog, and to log its packet captures to the read-only \verb|sshfs| mounted from our monitoring machine.
-We also installed \verb|oinkmaster| to automatically retrieve the latest community Snort rules, with a Snort API key registered specifically for this project.
-
-Unfortunately we noticed that Snort required a lot of resources and was slowing down the honeypot. Instead of Snort we decided to use Suricata, which uses the same ruleset, but uses it more efficiently and therefore less resources.
+Unfortunately we noticed that snort required a lot of resources and was slowing down the honeypot. We replaced snort with suricata, which is compatible with the snort ruleset format.
+This also allowed us to keep up with the snort community rules, which were refreshed daily using \verb|oinkmaster|.
+Furthermore, Suricata allows use of more advanced packet capture interfaces than \verb|libpcap|.
+We've configured suricata to sniff packets using the PF\_RING capture interface, a kernel-mode ring buffer of packets exposed via \verb|procfs|.
+This provided great results and allowed us to use many rules on a limited amount of memory.
 
 \subsubsection{Dionaea}
-Dionaea is a low interaction honeypot that provides several services, namely http, ftp, tftp, MSSQL, MySQL and SIP (VoIP). We installed this to enable more services and attract more traffic to the honeypot. 
+Dionaea is a low interaction honeypot daemon that provides several services, namely HTTP, FTP, TFTP, MSSQL, MySQL and SIP (VoIP).
+We have installed this to expose more services after noticing failing probes on some of the associated ports of FTP, MySQL, MSSQL and SIP services. 
+Enabling MSSQL on a Linux server might raise suspicions, however we felt this single exception to the rule might be overlooked or otherwise forgiven as a normal NAT configuration.
+The number of connection requests to this port was so high we decided we had to see what attackers were looking for.
 
 %Considering we are in a VM we might be limited in RAM, which Snort seems to require a lot of.
 %The configured rules will have to be minimal to avoid exhausting resources.
 
 \subsubsection{Auditing}
-During the High Interaction phase we used a kernel module that hooked execve (new process) calls and commandline interaction. This information was logged to syslog which provided us with auditing information during this phase.
+We reviewed various solutions to audit the command line after a successful break-in in our setup document, none of which seemed to match exactly what we needed.
+The problem can be characterized as: ``From `stealthy', `maintained', and `works out of the box', choose two.''
+Finally, after much research we produced a simple self-hiding kernel module that hooks \verb|execve| (new process) calls and logs the entire argument string for each call to syslog.
+The module makes use of the \verb|jprobes| interface for kernel debugging, which turned out to be ideal for this task.
+After it has been hidden using a `magic' command sequence, the module cannot be detected in \verb|lsmod| output, and is not detectable by \verb|rkhunter| or \verb|chkrootkit|, nor can its symbols be seen in kernel symbol lists exported by \verb|procfs|.
+%TODO reference phrack
+
 %For the HI phase, we would like to have a way to audit commandline interaction. 
 %Various options exist, such as the user-space \verb|auditd| daemon, but to make auditing harder to detect this we feel it would be best to look for a kernel-space solution.
 %An auditing module developed by the Honeynet project called Sebek can provide this, but is unmaintained and outdated.
@@ -147,7 +127,7 @@ During the High Interaction phase we used a kernel module that hooked execve (ne
 \label{Statistics}
 In this section we will discuss the statistical data that have been gathered from our logfiles. 
 The logged connection attempts have been processed to group them by the IP address' originating country through the use of WHOIS directory service information.
-It is worthwhile noting that a significant number of connecting hosts could not be referenced to RWHOIS information.
+It is worthwhile noting that a significant number of connecting hosts could not be referenced to WHOIS information.
 In these cases we have attempted to resolve the missing information by making use of reverse DNS queries and grouping by associated top level domain.
 Also note that these graphs display all logged connection attempts rather than successful connections, giving us a general view of which ports attract attention.
 
@@ -218,7 +198,7 @@ Due to the well-chosen name we could not find additional information on this cli
 \item ``ZmEu'' (41 attempts)
 
 The attackers using ``ZmEu'' found one valid path: /phpmyadmin/, however he did not exploit this. 
-It is interesting to see that both several \emph{''-''} and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)'' These clients are alleged to be for reconnacance purposes.
+It is interesting to see that both several \emph{''-''} and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.Romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)'' These clients are alleged to be for reconnaissance purposes.
 
 \item ``Morfeus Fucking Scanner'' (4 attempts)
 
@@ -249,15 +229,15 @@ As we looked further into the Dionaea logfiles we found that MSSQL was connected
 \label{Connection}
 In this section we will correlate the data about attacks against one service against the data of attacks of a different service. We will try to look for a pattern or similarities in this data and determine if the attack was more sophisticated.
 
-Three clients connected to both HTTP and Kippo, which raised our suspision:
+Three clients connected to both HTTP and Kippo, which raised our suspicion:
 \begin{itemize}
 \item 58.17.52.14
 
-This citizen of the Peoples Republic of China poked every possible entrance, in two consequental days: he made a connection to Kippo and disconnected immideately. He also requested the main / folder via HTTP, using the client "-". Scanlogd also reported scans on port 80, 8080, 3128, 9415, 8909, 9592, 1080, 443. Unfortunately for us we were not attractive for him to return and actually break in.
+This citizen of the Peoples Republic of China poked every possible entrance, in two consequential days: he made a connection to Kippo and disconnected immediately. He also requested the main / folder via HTTP, using the client "-". Scanlogd also reported scans on port 80, 8080, 3128, 9415, 8909, 9592, 1080, 443. Unfortunately for us we were not attractive for him to return and actually break in.
 
 \item 61.190.172.2
 
-On four occasions this inhabitant of China probed us, split over 4 weeks. He also just connected to Kippo (Suricata reported a SSH-scan) and disconnected: he did this for fourty times in 3 minutes. Interestingly enough he was one of the users of the Morfius Fucking Scanner client: only requesting the /user/soapCaller.bs file.
+On four occasions this inhabitant of China probed us, split over 4 weeks. He also just connected to Kippo (suricata reported a SSH-scan) and disconnected: he did this for forty times in 3 minutes. Interestingly enough he was one of the users of the Morfeus Fucking Scanner client: only requesting the /user/soapCaller.bs file.
 
 \item 125.88.75.199
 
@@ -268,14 +248,19 @@ The last prober was also from China. On November 22th he connected to Kippo to a
 
 \section{Conclusion}
 \label{Conclusion}
-From Section \ref{Attacks} we can conclude that our honeypot was not as popular as we had hoped it would be. Because we chose not to advertise, we solely relied on the hackers abilities to find us by for example portscans. The number of attacks on us was therefore not high and neither was the depth of the attacks. 
+The Setup we used for this honeypot seems to be sufficient. In both phases of the research we did not lose control over our honeypot, which was our main worry. We also decided not to advertise, which gave our honeypot less traffic, but a more realistic outcome.
 
-Concluding: 
+From the Section Attacks we can conclude that our honeypot was not as popular as we had hoped it would be. We blame this on not advertising our IP. The numbers of attacks on us were therefore not high and neither was the depth of the attacks.
 
+Only three real scans took place, as reported in the Section Connections between attacks. Unfortuntaly we did not make our honeypot interesting enough for them to return and actually break in.
+
+Our chose for swiching from a Low Interaction to a High Interaction honeypot seems like a good tactic, but due to downtime and bugged software, we did not have enough time.
+
+Concluding: we did see some people checking us out, but noone actually broke in. For further research we suggest using the same setup, but having the server online for a much longer time.
 
 \section{Discussion}
 \label{Discussion}
-In this section we would like to discuss some issues we encountered during the honeypotproject. 
+In this section we would like to discuss some issues we encountered during the honeypot project. 
 
 \begin{itemize}
 \item Low/High interaction phase
@@ -284,19 +269,19 @@ To see what the best approach is to a honeypot project, we decided to split the 
 
 \item Lack of interest
 
-We decided to make this honeypot as realistic as possible, this meant: not advertising our honeypot on IRC-channels or 4Chan. Our motivation was that in nonhoneypot circumstances this would also not be done. So for example advertising the IP address of the honeypot would attract a lot more hackers than a normal server would. So the results would not be on par with attacks against a normal server. In the High interaction phase we had a website that attracted people to our honeypot, which is a more realistic approach to attracting hackers.
+We decided to make this honeypot as realistic as possible, this meant: not advertising our honeypot on IRC-channels or 4Chan. Our motivation was that in non-honeypot circumstances this would also not be done. So for example advertising the IP address of the honeypot would attract a lot more hackers than a normal server would. So the results would not be on par with attacks against a normal server. In the High interaction phase we had a website that attracted people to our honeypot, which is a more realistic approach to attracting hackers.
 
 \item DenyHosts
 
-To make sure our real SSH port would not be brute forced, we added DenyHost to the port. We soon realized that this was a very effective countermeasurement versus intruders: both Bart and Joost were blocked due to their lack of Linux knowledge. Luckely Mark and Aram were able to unblock the other two.
+To make sure our real SSH port would not be brute forced, we added DenyHost to the port. We soon realized that this was a very effective counter measurement versus intruders: both Bart and Joost were blocked due to their lack of Linux knowledge. Luckily Mark and Aram were able to unblock the other two.
 
 \item Linux knowledge
 
-Two of the teammembers had limited Linux experience. It took some time for them to understand how Linux commandline works. Fortunately we had two guru's in the group that were able to teach the newbies.
+Two of the team members had limited Linux experience. It took some time for them to understand how Linux commandline works. Fortunately we had two guru's in the group that were able to teach the newbies.
 
 \item Google Hack Honeypot
 
-The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were nonexistent and we were switching to HI later on, we decided not to use it. 
+The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were non-existent and we were switching to HI later on, we decided not to use it. 
 
 \end{itemize}
 

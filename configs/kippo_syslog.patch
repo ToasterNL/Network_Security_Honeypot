@@ -6,7 +6,7 @@ Index: utils/createfs.py
                  '/root/.bash_history',
                  ):
              continue
-+        if 'kerckhoffs' in path or 'kippo' in path:
++        if 'kerckhoffs' in path or 'kippo' in path or 'scanlogd' in path:
 +            continue
  
          try:
@@ -35,7 +35,19 @@ Index: kippo/core/honeypot.py
          self.interactors = []
          self.logintime = time.time()
          self.ttylog_open = False
-@@ -555,6 +561,7 @@
+@@ -520,6 +526,11 @@
+         if self.ttylog_open:
+             ttylog.ttylog_close(self.ttylog_file, time.time())
+             self.ttylog_open = False
++
++        syslog.syslog(syslog.LOG_INFO, 'KIPPO Lost connection: %s:%s [session: %d]' % \
++            (self.transport.getPeer().host, self.transport.getPeer().port,
++            self.transport.sessionno)
++        )
+         transport.SSHServerTransport.connectionLost(self, reason)
+ 
+ from twisted.conch.ssh.common import NS, getNS
+@@ -555,6 +566,7 @@
  
      # Special delivery to the loggers to avoid scope problems
      def logDispatch(self, sessionid, msg):
@@ -43,7 +55,16 @@ Index: kippo/core/honeypot.py
          for dblog in self.dbloggers:
              dblog.logDispatch(sessionid, msg)
  
-@@ -644,9 +651,11 @@
+@@ -605,7 +617,7 @@
+         # FIXME: try to mimic something real 100%
+         t = HoneyPotTransport()
+ 
+-        t.ourVersionString = 'SSH-2.0-OpenSSH_5.1p1 Debian-5'
++        t.ourVersionString = 'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu7'
+         t.supportedPublicKeys = self.privateKeys.keys()
+         if not self.primes:
+             ske = t.supportedKeyExchanges[:]
+@@ -644,9 +656,11 @@
      def checkUserPass(self, username, password):
          if UserDB().checklogin(username, password):
              print 'login attempt [%s/%s] succeeded' % (username, password)
