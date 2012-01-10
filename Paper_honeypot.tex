@@ -252,11 +252,13 @@ The Setup we used for this honeypot seems to be sufficient. In both phases of th
 
 From the Section Attacks we can conclude that our honeypot was not as popular as we had hoped it would be. We blame this on not advertising our IP. The numbers of attacks on us were therefore not high and neither was the depth of the attacks.
 
-Only three real scans took place, as reported in the Section Connections between attacks. Unfortuntaly we did not make our honeypot interesting enough for them to return and actually break in.
+Only three real scans took place, as reported in the Section Connections between attacks. Unfortunately we did not make our honeypot interesting enough for them to return and actually break in.
 
-Our chose for swiching from a Low Interaction to a High Interaction honeypot seems like a good tactic, but due to downtime and bugged software, we did not have enough time.
+Our choice for swiching from a Low Interaction to a High Interaction honeypot seems like a good tactic, but due to the low activity we did not have enough time to collect significant results.
 
-Concluding: we did see some people checking us out, but noone actually broke in. For further research we suggest using the same setup, but having the server online for a much longer time.
+Concluding: we did see a lot of probing activity, but no one actually broke in.
+%For further research we suggest using the same setup, but having the server online for a much longer time.
+We would like to continue a similar setup for research purposes privately.
 
 \section{Discussion}
 \label{Discussion}
@@ -277,11 +279,16 @@ To make sure our real SSH port would not be brute forced, we added DenyHost to t
 
 \item Linux knowledge
 
-Two of the team members had limited Linux experience. It took some time for them to understand how Linux commandline works. Fortunately we had two guru's in the group that were able to teach the newbies.
+Two of the team members had limited Linux experience. It took some time for them to understand how Linux command line works. Fortunately we had two guru's in the group that were able to teach the newbies.
 
 \item Google Hack Honeypot
 
-The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were non-existent and we were switching to HI later on, we decided not to use it. 
+The Google Hack Honeypot was supposed to entice hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were non-existent and we were switching to HI later on, we decided not to use it. 
+
+\item Lack of tools
+
+There exists a significant lack of tools to stealthily audit HI Linux honeypot activity, and as can by Project Honeynet's Google summer of Code project, a lack of graphing tools for network data.
+For this paper we invented our own using Python and Gnuplot.
 
 \end{itemize}
 
