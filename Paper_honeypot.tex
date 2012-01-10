@@ -36,7 +36,7 @@
 %-------------------------------- Title ----------------------------------
 
 \title{\textbf{Honeypot Assignment: \\ \emph{Group Contagiarium}}}
-\author{Aram Verstegen, \tocheck{studentnummer Utwente} \\
+\author{Aram Verstegen, s4092368 \\
 	 Mark Vijfvinkel, 1275194 \\
 	 Bart Lutgens, 12752408 \\
 	Joost Kremers, 1275259}
@@ -65,81 +65,14 @@ On the 1st of November we delivered our initial setup document, however during t
 
 %%%%MOET NOG WORDEN HERZIEN%%%%%
 
-\subsection{Monitoring Machine}
-
-In this subsection we describe the setup of the monitoring machine.
-
-\subsubsection{Syslog-ng}
-By default, \verb|syslog| uses UDP to transmit its log messages to a remote server.
-Relying on UDP is not desirable, because everything is sent in plaintext and delivery of UDP messages is not guaranteed.
-To allow for confidential and reliable transmission of the syslog messages from the one machine to another, one needs to use TCP connections in syslog, and provide some way of encapsulating the socket used in a cryptographic layer.
-
-
-We decided to set up a reverse SSH tunnel from the monitoring machine to the honeypot machine, as described in the article "Remote logging with SSH and syslog-ng''. \cite{remote_logging}
-The example command establishes an SSH connection the honeypot, setting options to forego a login shell or anything a normal user would desire, and binds the local socket 9514 on the honeypot machine to tunnel its connections to the same port on our monitoring machine.
-
-We configured a locally installed \verb|syslog-ng| package for our user on the monitoring machine and have configured it to listen to local TCP connections on port 9514 and will thereby receive syslog messages transmitted through this port.
-%We are aware there is still the possibility of other users on the monitoring machine poisoning our logs, but we feel we can rule out foul play by our peers in this assignment.
-
-To allow for secure SSH access, a public keypair was generated on the util machine and the associated public key was added to the honeypot's \verb|authorized_keys| file.
-
-We have put the command to create the SSH tunnel in a script to allow the connection to be re-esthablished quickly and easily if the SSH session is terminated for some reason. 
-A severance of the connection would lead us to assume the worst initially.
-If re-establishing this connection fails after any attackers have gained access (which should never happen if we monitor adequately), we would have assumed that the machine was compromised beyond our control and would have requested a shutdown of the VM, if no network downtime was otherwise announced.
-
-\subsubsection{Monitoring}
-After collecting our syslog information, we wanted to be somehow alerted of interesting information automatically.
-We decided to use an IRC bot that would leave a message in an IRC channel (\#contagiarium) everytime an entry was made to the syslog file. First this lead to an overloaded channel and several false positives. To solve these problems filters (regular expressions in a file) were created to only post relevant information. For example, from the kippo logs only the actual login attempts would be shown with the tried password.
-
-
-\subsection{Honeypot}
-
-In this section we describe the setup of the honeypot.
-
-\subsubsection{Rsyslog}
-On the honeypot, we modified the default \verb|rsyslog| configuration to also send syslog messages to the (now bound) local port 9514, completing the chain to the syslog instance on our monitoring machine.
-At first the modified configuration was stored in its own file in the syslog.d directory, which is a bit obvious to anyone taking an interest. Therefore we moved the configuration to the standard syslog directory. 
-
-%We plan to move this small configuration over to one of the default configuration files to avoid raising suspicion outright.
-Note that the chosen port for remote syslog is very similar to the default syslog port 514, which might have given us away. So we changed the port number to 9514.
-%We plan to change it to a more nondescript port number.
-
-\subsubsection{SSHFS mount}
-Not all services support logging to syslog and for some it is infeasible.
-We created a read-only \verb|sshfs| mount from our monitoring machine that we used to write our logfiles for various services to.
-We used an interactive login to mount this, as allowing the honeypot back into our monitoring machine with an SSH keypair just seems dangerous.
-
-\subsubsection{scanlogd}
-To detect port scans we installed the service \verb|scanlogd|.
-Per detected scan an entry is written to syslog.
-
-\subsubsection{iptables}
-To log all incoming and outgoing connection attempts, we have added the following rules to the iptables configuration. The attempts were also logged to syslog.
-
-\begin{verbatim}
-iptables -I INPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
-iptables -I OUTPUT -m state --state NEW -j LOG --log-prefix "New Connection: "
-\end{verbatim}
-
-We have filtered outgoing SMTP, SIP and NetBIOS traffic, in order to prevent abuse and spam.
-%We are also going to filter outgoing SMTP, SIP and NetBIOS traffic.
+\subsection{Rsyslog}
+At first the rsyslog configuration was stored in its own file in the syslog.d directory, which might have been seen by an attacker.
+Therefore we have moved it to the default syslog configuration file. 
 
 \subsubsection{Kippo}
-To capture attackers that try to come in by brute-forcing SSH logins, we used Kippo. 
-Kippo is a sandbox SSH service, used to log bruteforce attacks and the shell interaction performed by the attacker after gaining access (with a trivial password). 
-The latest development version was installed to run as a separate user.
-
-To make this as realistic as possible we added a redirect in the iptables configuration from the real SSH port 22 to port 2222 that Kippo uses by default.
-The reason for forwarding in iptables was to not give Kippo root rights, which would be very dangerous.
-
-%Unfortunately the forward broke down around the time the firewall was being reconfigured, for reasons yet unclear . 
-%If it can't be resolved, we can circumvent this issue by running Kippo through a copy of the Python interpreter that has the capability to bind privileged ports.
-
-To be able to still log on to the honeypot, we configured our real SSH service to run on port 9022.
-
-Furthermore, we patched Kippo to log messages to syslog.
-
-During the second phase of the project, we noticed that of the succesfull bruteforce attempts against Kippo, none actually tried to continue and explore or use the honeypot. Running a default portscan with Metasploit revealed that it can detect if Kippo is being used. We thought this explained why nobody tried to log in. To solve this problem, we adjusted the Kippo configuration so that Metasploit could not recognize Kippo. Unfortunately this did still not lead to actual exploration or use of the honeypot. 
+During the second phase of the project, we noticed that of the succesful dictionary-based bruteforce attempts against Kippo, none actually tried to continue and explore or use the honeypot.
+Running an nmap portscan from Metasploit (which adds to the information provided by nmap) revealed that it can detect if Kippo is being used.
+This doesn't explain why people should refrain from logging in after a successful dictionary attack
 
 \subsubsection{DenyHosts}
 If someone found out that our real SSH port was changed to 9022, they might try to break in through the real SSH service.
