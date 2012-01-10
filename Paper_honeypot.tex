@@ -222,7 +222,7 @@ During phase 2 we have monitored the honeypot closely and collected data about d
 
 \subsection{Kippo}
 
-The first service we will be talking about is Kippo. During the interaction phase we've had 2610 login attempt on our Kippo client and 3871 connections. 54 of these attempts were succesfull.
+The first service we will be talking about is Kippo. During the interaction phase we've had 2610 login attempt on our Kippo client and 3871 connections. 54 of these attempts were successful.
 We have made a top 5 of most tried usernames in these login attempts:
 
 \begin{tabular}{|l|r|}
@@ -235,10 +235,10 @@ We have made a top 5 of most tried usernames in these login attempts:
 19 & jenny \\ \hline
 \end{tabular}
 
-It is not entirely unexpected that the username "root" is tried most ofted. 
-We assume the username "w000t" is a backdoor user created in one or more exploits.
-Interesting to note is that "jenny" is the name of a fake employee listed on the our honeypot website.
-Most usernames were tried multiple times, even if they made no sense to us for instance msnayeem\_iitd tried to log in four times.
+It is not entirely unexpected that the username ``root'' is tried most often. 
+The username ``w000t'' is a backdoor user created in the FAKE Apache 2.2.17 exploit.
+Interesting to note is that ``jenny'' is the name of a fake employee listed on the our honeypot website.
+Most usernames were tried multiple times, even if they made no sense to us for instance ``msnayeem\_iitd'' tried to log in four times.
 
 These are the top 5 passwords tried:
 
@@ -252,37 +252,37 @@ These are the top 5 passwords tried:
 16 & admin \\ \hline
 \end{tabular}
 
-
 As you can see, the most tried password is a blank password. The other passwords in this top 5 are all standard password that can be found in a dictionary attack. It is nice to note that 123456 was accepted by our system.
 
-An interesting situation was someone that tried to log in to the honeypot with the user root, just trying a list of years (1960-1980). He obviously thought we would use a birthyear as our password (which was not the case).
+An interesting situation was someone that tried to log in to the honeypot with the user root, just trying a list of years (1960-1980). It seems like an unusual brute force attack. Assuming someone used their birthday as a password, which still happens a lot, it is unlikely that this someone just used their birth year and not the whole birthday. However brute forcing for the entire birthday takes way to long. So for a quick and easy brute force it is unlikely to yield results.
 
 \subsection{HTTP}
 In three weeks, a total of 76002 HTTP-requests were received by our Apache server originating from 176 unique IP addresses. 4369 of these requests were 404'd.
 
 These 404's are interesting because they show us what addresses the attackers were trying to access. For instance, we see a lot of scans for phpMyAdmin (phpMyAdmin-3.3.10.5, phpMyAdmin-3.4.7, phpMyAdmin-3.4.6 etcetera). They also searched non existing folders for these phpMyAdmin files. 
 
-Also serveral client IDs are visible in these logs: 
+Also several client IDs are visible in these logs: 
 
 \begin{itemize}
-\item ``\emph{``-''}'' (3432 attempts)
+\item \emph{``-''} (3432 attempts)
 
-This is a blank user/client ID.
+This is a blank user/client ID. Which seems to be a popular client to use when you want to find weak software on a server.
 
 \item ``MiRRORS'' (310 attempts)
 
-\tocheck{Info over MiRRORS}
+Due to the well-chosen name we could not find additional information on this client. Mirrors is a frequently used word on the internet.
 
 \item ``ZmEu'' (41 attempts)
 
-The attackers using ``ZmEu'' found one valid path: /phpmyadmin/, however he did not exploit this. It is interesting to see that both several ``\emph{''-''}'' and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)''
+The attackers using ``ZmEu'' found one valid path: /phpmyadmin/, however he did not exploit this. 
+It is interesting to see that both several \emph{''-''} and several ``ZmEu'' users are scanning for ``/w00tw00t.at.blackhats.romanian.anti-sec:)'' and ``/w00tw00t.at.ISC.SANS.DFind:)''
 
 \item ``Morfeus Fucking Scanner'' (4 attempts)
 
-``Morfeus Fucking Scanner'' was used by one attacker, that soly searched for /user/soapCaller.bs. We could not find anything on this .bs file.
+``Morfeus Fucking Scanner'' was used by one attacker, that solely searched for /user/soapCaller.bs. We could not find anything on this .bs file.
 \end{itemize}
 
-We expected to see several occurances of ``/robots.txt'' because this is a common way to start when using a search engine crawler, but none were found.
+We expected to see several occurrences of ``/robots.txt'' because this is a common way to start when using a search engine crawler, but none were found.
 
 
 \section{Connection between the attacks}
@@ -325,14 +325,6 @@ Two of the teammembers had limited Linux experience. It took some time for them 
 The Google Hack Honeypot was supposed to attract hackers. Unfortunately it soon crashed due to unknown configuration errors. Because the results in the period the tool was running were nonexistent and we were switching to HI later on, we decided not to use it. 
 
 \end{itemize}
-
-\begin{itemize}
-\item Low/High interaction phase
-\item GHH
-\item etc
-\end{itemize}
-
-
 
 %%% REFS %%%
 
